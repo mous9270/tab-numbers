@@ -15,16 +15,6 @@
       "js": ["content.js"],
       "css": ["styles.css"]
     }
-  ],
-  "commands": {
-    "_execute_action": {
-      "suggested_key": {
-        "default": "Alt"
-      }
-    }
-  },
-  "action": {
-    "default_popup": "popup.html"
-  }
+  ]
 }
 

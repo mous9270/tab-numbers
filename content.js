@@ -1,18 +1,26 @@
 let tabNumberElement = null;
 
-chrome.runtime.onMessage.addListener((message) => {
-  if (!tabNumberElement) {
-    tabNumberElement = document.createElement('div');
-    tabNumberElement.className = 'tab-number-overlay';
-    document.body.appendChild(tabNumberElement);
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Alt') {
+    chrome.runtime.sendMessage({ action: 'showTabNumbers' });
   }
-  tabNumberElement.textContent = message.tabNumber;
-  tabNumberElement.style.display = 'block';
+});
 
-  document.addEventListener('keyup', (event) => {
-    if (event.key === 'Alt') {
-      tabNumberElement.style.display = 'none';
+document.addEventListener('keyup', (event) => {
+  if (event.key === 'Alt' && tabNumberElement) {
+    tabNumberElement.style.display = 'none';
+  }
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.tabNumber) {
+    if (!tabNumberElement) {
+      tabNumberElement = document.createElement('div');
+      tabNumberElement.className = 'tab-number-overlay';
+      document.body.appendChild(tabNumberElement);
     }
-  });
+    tabNumberElement.textContent = message.tabNumber;
+    tabNumberElement.style.display = 'block';
+  }
 });
 
