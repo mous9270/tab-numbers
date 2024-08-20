@@ -1,18 +1,30 @@
 {
-  "manifest_version": 2,
-
-  "name": "Numbered Tabs",
-  "description": "See order of your open tabs to navigate easily",
-  "version": "0.1",
-
+  "manifest_version": 3,
+  "name": "Tab Number Display",
+  "version": "1.0",
+  "description": "Displays tab numbers when Alt key is pressed.",
   "permissions": [
-    "activeTab"
+    "tabs"
   ],
-  "browser_action": {
-    "default_title": "Number tabs!"
-  },
   "background": {
-    "persistent": false,
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt"
+      }
+    }
+  },
+  "action": {
+    "default_popup": "popup.html"
   }
 }
+

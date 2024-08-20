@@ -1,14 +1,12 @@
-var separator = "] "
-
-function renderTitle(tab) {
-  var title = tab.title
-  var index = tab.index + 1   // Because you need to press 1 for first page in Chrome UI
-  var start = title.indexOf(separator) > -1 ? (title.indexOf(separator) + separator.length) : -1
-  return "".concat(index.toString(), separator, title.substring(start))
-}
-
-chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.executeScript({
-      code: "document.title=".concat('"',renderTitle(tab),'"')
-    });
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.commands.onCommand.addListener((command) => {
+    if (command === "_execute_action") {
+      chrome.tabs.query({}, (tabs) => {
+        tabs.forEach((tab, index) => {
+          chrome.tabs.sendMessage(tab.id, { tabNumber: index + 1 });
+        });
+      });
+    }
   });
+});
+
