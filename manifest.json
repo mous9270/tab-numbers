@@ -1,20 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "Tab Number Display",
+  "name": "Tab Numberer",
   "version": "1.0",
-  "description": "Displays tab numbers when Alt key is pressed.",
-  "permissions": [
-    "tabs"
-  ],
+  "description": "Displays tab numbers when Alt is pressed",
+  "permissions": ["tabs"],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["styles.css"]
+      "js": ["content.js"]
     }
   ]
 }
-
