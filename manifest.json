@@ -1,18 +1,21 @@
 {
-  "manifest_version": 2,
-
-  "name": "Numbered Tabs",
-  "description": "See order of your open tabs to navigate easily",
-  "version": "0.1",
-
-  "permissions": [
-    "activeTab"
+  "manifest_version": 3,
+  "name": "Tab Numberer",
+  "version": "1.0",
+  "description": "Displays tab numbers and website URLs on the page",
+  "permissions": ["tabs"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
   ],
-  "browser_action": {
-    "default_title": "Number tabs!"
-  },
-  "background": {
-    "persistent": false,
-    "scripts": ["background.js"]
+  "commands": {
+    "toggle-numbers": {
+      "suggested_key": {
+        "default": "Alt+0"
+      },
+      "description": "Toggle tab numbers and website URLs"
+    }
   }
 }

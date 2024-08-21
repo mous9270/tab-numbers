@@ -1,14 +1,25 @@
-var separator = "] "
+let port;
 
-function renderTitle(tab) {
-  var title = tab.title
-  var index = tab.index + 1   // Because you need to press 1 for first page in Chrome UI
-  var start = title.indexOf(separator) > -1 ? (title.indexOf(separator) + separator.length) : -1
-  return "".concat(index.toString(), separator, title.substring(start))
+function updateTabNumbers() {
+  chrome.tabs.query({currentWindow: true}, function(tabs) {
+    if (port) {
+      port.postMessage({
+        action: "updateTabNumbers",
+        tabs: tabs
+      });
+    }
+  });
 }
 
-chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.executeScript({
-      code: "document.title=".concat('"',renderTitle(tab),'"')
-    });
+chrome.commands.onCommand.addListener(function(command) {
+  if (command === 'toggle-numbers') {
+    updateTabNumbers();
+  }
+});
+
+chrome.runtime.onConnect.addListener(function(portReceived) {
+  port = portReceived;
+  port.onDisconnect.addListener(function() {
+    port = null;
   });
+});

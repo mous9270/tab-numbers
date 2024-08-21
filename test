@@ -1,0 +1,96 @@
+let port;
+
+function updateTabNumbers() {
+  chrome.tabs.query({currentWindow: true}, function(tabs) {
+    if (port) {
+      port.postMessage({
+        action: "updateTabNumbers",
+        tabs: tabs
+      });
+    }
+  });
+}
+
+chrome.commands.onCommand.addListener(function(command) {
+  if (command === 'toggle-numbers') {
+    updateTabNumbers();
+  }
+});
+
+chrome.runtime.onConnect.addListener(function(portReceived) {
+  port = portReceived;
+  port.onDisconnect.addListener(function() {
+    port = null;
+  });
+});
+{
+  "manifest_version": 3,
+  "name": "Tab Numberer",
+  "version": "1.0",
+  "description": "Displays tab numbers on the tab strip when Alt is pressed",
+  "permissions": ["tabs", "windows"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "toggle-numbers": {
+      "suggested_key": {
+        "default": "Alt+0"
+      },
+      "description": "Toggle tab numbers on the tab strip"
+    }
+  }
+}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Tab Numbers</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        margin: 0;
+        padding: 10px;
+        background-color: #f1f1f1;
+      }
+      .tab-number {
+        background-color: #333;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        margin-right: 4px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tab-numbers"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>
+let port;
+
+document.addEventListener('DOMContentLoaded', function() {
+  port = chrome.runtime.connect({name: "tab-numberer"});
+  port.onMessage.addListener(function(message) {
+    if (message.action === "updateTabNumbers") {
+      updateTabNumbers(message.tabs);
+    }
+  });
+});
+
+function updateTabNumbers(tabs) {
+  const tabNumbersDiv = document.getElementById('tab-numbers');
+  tabNumbersDiv.innerHTML = '';
+
+  tabs.forEach((tab, index) => {
+    const tabNumberDiv = document.createElement('div');
+    tabNumberDiv.classList.add('tab-number');
+    tabNumberDiv.textContent = index + 1;
+    tabNumbersDiv.appendChild(tabNumberDiv);
+  });
+}
