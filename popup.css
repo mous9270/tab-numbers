@@ -1,0 +1,11 @@
+body {
+  width: 200px;
+  font-family: Arial, sans-serif;
+  margin: 10px;
+}
+
+#tab-list {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+

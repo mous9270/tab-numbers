@@ -1,11 +1,23 @@
 {
   "manifest_version": 3,
-  "name": "Tab Numberer",
+  "name": "Tab Navigator",
   "version": "1.0",
-  "description": "Displays tab numbers when Alt is pressed",
+  "description": "Displays a list of tabs when a specific key combination is pressed.",
   "permissions": ["tabs"],
   "background": {
     "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "show-tab-list": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+T"
+      },
+      "description": "Show tab list"
+    }
   },
   "content_scripts": [
     {
@@ -14,3 +26,4 @@
     }
   ]
 }
+
