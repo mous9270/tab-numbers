@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Tab Numberer",
+  "name": "Tab Navigator",
   "version": "1.0",
-  "description": "Displays tab numbers when Alt is pressed",
+  "description": "Displays a list of tabs when Alt is pressed and allows switching tabs.",
   "permissions": ["tabs"],
   "background": {
     "service_worker": "background.js"
@@ -12,5 +12,6 @@
       "matches": ["<all_urls>"],
       "js": ["content.js"]
     }
-  ]
+  ],
+  "action": {}
 }

@@ -1,49 +1,49 @@
-let numberDiv;
+let tabListDiv = null;
 
-function createNumberDiv() {
-  if (!numberDiv) {
-    numberDiv = document.createElement('div');
-    numberDiv.style.cssText = `
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === "showTabList") {
+    showTabList(message.tabList);
+  }
+});
+
+function showTabList(tabList) {
+  if (!tabListDiv) {
+    tabListDiv = document.createElement('div');
+    tabListDiv.style.cssText = `
       position: fixed;
-      top: 5px;
-      left: 5px;
-      background-color: #000;
-      color: #fff;
-      padding: 5px;
-      border-radius: 5px;
-      font-size: 16px;
+      top: 10px;
+      left: 10px;
+      background: white;
+      border: 1px solid black;
+      padding: 10px;
       z-index: 9999;
-      display: none;
+      font-family: Arial, sans-serif;
+      max-height: 80vh;
+      overflow-y: auto;
     `;
-    document.body.appendChild(numberDiv);
+    document.body.appendChild(tabListDiv);
+  }
+  
+  tabListDiv.innerHTML = tabList.join('<br>');
+  tabListDiv.style.display = 'block';
+
+  document.addEventListener('keyup', handleKeyUp);
+}
+
+function handleKeyUp(event) {
+  if (event.key === 'Alt') {
+    tabListDiv.style.display = 'none';
+    document.removeEventListener('keyup', handleKeyUp);
+  } else if (event.key >= '1' && event.key <= '9') {
+    const index = parseInt(event.key) - 1;
+    chrome.runtime.sendMessage({type: "switchTab", index: index});
+    tabListDiv.style.display = 'none';
+    document.removeEventListener('keyup', handleKeyUp);
   }
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  if (request.action === "updateNumber") {
-    createNumberDiv();
-    numberDiv.textContent = request.number;
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Alt') {
+    chrome.runtime.sendMessage({type: "getTabs"});
   }
 });
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Alt') {
-    createNumberDiv();
-    numberDiv.style.display = 'block';
-  }
-});
-
-document.addEventListener('keyup', function(e) {
-  if (e.key === 'Alt') {
-    if (numberDiv) {
-      numberDiv.style.display = 'none';
-    }
-  }
-});
-
-// Ensure the div is created even if the tab was opened before the extension was installed
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', createNumberDiv);
-} else {
-  createNumberDiv();
-}
