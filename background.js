@@ -1,19 +1,14 @@
-function updateTabNumbers() {
-  chrome.tabs.query({currentWindow: true}, function(tabs) {
-    tabs.forEach((tab, index) => {
-      chrome.tabs.sendMessage(tab.id, {action: "updateNumber", number: index + 1})
-        .catch(error => {
-          console.log(`Couldn't send message to tab ${tab.id}. This is normal for new tabs or special Chrome pages.`);
-        });
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "getTabs") {
+    chrome.tabs.query({}, (tabs) => {
+      const tabList = tabs.map((tab, index) => `${index + 1}: ${tab.title}`);
+      chrome.tabs.sendMessage(sender.tab.id, {type: "showTabList", tabList});
     });
-  });
-}
-
-// Update numbers when tabs change
-chrome.tabs.onActivated.addListener(updateTabNumbers);
-chrome.tabs.onCreated.addListener(updateTabNumbers);
-chrome.tabs.onRemoved.addListener(updateTabNumbers);
-chrome.tabs.onMoved.addListener(updateTabNumbers);
-
-// Initial update
-updateTabNumbers();
+  } else if (message.type === "switchTab") {
+    chrome.tabs.query({}, (tabs) => {
+      if (tabs[message.index]) {
+        chrome.tabs.update(tabs[message.index].id, {active: true});
+      }
+    });
+  }
+});
